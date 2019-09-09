@@ -60,7 +60,7 @@ ifneq (,$(findstring unix,$(platform)))
    LDFLAGS += -lroot
    CXXFLAGS += -fpermissive
    else
-   LDFLAGS += -lrt
+   LDFLAGS += -lrt math_neon/libmathneon.a
    endif
    
    # Raspberry Pi
