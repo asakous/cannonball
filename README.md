@@ -1,3 +1,5 @@
+change ym2151 to utilize neon instructions
+
 Cannonball - OutRun Engine
 ==========================
 
