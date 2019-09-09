@@ -24,6 +24,7 @@
 #define log std::log
 #endif
 
+#include "hwaudio/math_neon.h"
 
 signed int     chanout[8];
 signed int     m2,c1,c2;            /* Phase Modulation input for operators 2,3,4  */
@@ -435,8 +436,10 @@ void YM2151::init_tables()
 
     for (x=0; x<TL_RES_LEN; x++)
     {
-        m = (1<<16) / pow(2, (x+1) * (ENV_STEP/4.0) / 8.0);
-        m = floor(m);
+        /* m = (1<<16) / pow(2, (x+1) * (ENV_STEP/4.0) / 8.0); */
+		m = (1<<16) / powf_neon(2, (x+1) * (ENV_STEP/4.0) / 8.0);
+        /* m = floor(m); */
+		m = floorf_neon(m);
 
         /* we never reach (1<<16) here due to the (x+1) */
         /* result fits within 16 bits at maximum */
@@ -471,14 +474,14 @@ void YM2151::init_tables()
     for (i=0; i<SIN_LEN; i++)
     {
         /* non-standard sinus */
-        m = sin( ((i*2)+1) * M_PI / SIN_LEN ); /* verified on the real chip */
+        m = sinf_neon( ((i*2)+1) * M_PI / SIN_LEN ); /* verified on the real chip */
 
         /* we never reach zero here due to ((i*2)+1) */
 
         if (m>0.0)
-            o = 8*log(1.0/m)/log(2.0);    /* convert to 'decibels' */
+            o = 8*logf_neon(1.0/m)/logf_neon(2.0);    /* convert to 'decibels' */
         else
-            o = 8*log(-1.0/m)/log(2.0);    /* convert to 'decibels' */
+            o = 8*logf_neon(-1.0/m)/logf_neon(2.0);    /* convert to 'decibels' */
 
         o = o / (ENV_STEP/4);
 
